@@ -10,6 +10,8 @@ namespace Todo.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly TodoDbContext _context;
+        public record LoginData(string email, string senha);
+        public record CadastroData(string nome, string email, string senha);
 
         public UsuarioController(TodoDbContext context)
         {
@@ -17,10 +19,10 @@ namespace Todo.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] string email, string senha)
+        public async Task<IActionResult> Login([FromBody] LoginData data)
         {
             var qry = from usuario in _context.Usuarios
-                      where usuario.Email == email && usuario.Senha == senha
+                      where usuario.Email == data.email && usuario.Senha == data.senha
                       select usuario;
 
             var usuarioEncontrado = await qry.FirstOrDefaultAsync();
@@ -31,9 +33,9 @@ namespace Todo.Controllers
         }
 
         [HttpPost("cadastro")]
-        public async Task<IActionResult> CadastrarUsuario([FromBody] string nome, string email, string senha)
+        public async Task<IActionResult> CadastrarUsuario([FromBody] CadastroData data)
         {
-            var novoUsuario = new Usuario(0, nome, email, senha);
+            var novoUsuario = new Usuario(0, data.nome, data.email, data.senha);
             _context.Usuarios.Add(novoUsuario);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(CadastrarUsuario), new { id = novoUsuario.Id }, novoUsuario);
