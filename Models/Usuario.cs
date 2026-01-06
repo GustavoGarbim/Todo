@@ -7,6 +7,8 @@
         public string Email { get; set; }
         public string Senha { get; private set; }
 
+        public virtual ICollection<ListaTarefas> Listas { get; set; }
+
         public void SetSenha(string senha)
         {
             Senha = senha;
